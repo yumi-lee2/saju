@@ -1,0 +1,886 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>saju</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Song+Myung&family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap">
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    font-family: 'Noto Sans KR', system-ui, sans-serif;
+    background: #0c0c0c;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+  }
+  a { color: oklch(0.75 0.01 140); }
+  a:hover { color: #DCFF52; }
+
+  .screen {
+    position: relative;
+    width: 100%;
+    max-width: 430px;
+    height: 100vh;
+    background: #171717;
+    color: oklch(0.95 0.005 100);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .content {
+    position: relative;
+    z-index: 1;
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .view {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .view-pad {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 24px 24px;
+    gap: 14px;
+  }
+
+  .eyebrow {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    color: oklch(0.6 0.01 140);
+    text-transform: uppercase;
+  }
+
+  .declare {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .declare-lead {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: oklch(0.6 0.01 140);
+  }
+  .declare-main {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 800;
+    font-size: 21px;
+    line-height: 1.4;
+    color: oklch(0.97 0.005 100);
+  }
+  .declare-main mark {
+    background: #DCFF52;
+    color: #171717;
+    padding: 0 4px;
+    border-radius: 2px;
+  }
+
+  /* ---- Character info (cover-card, zeta-style) ---- */
+  .cover { position: relative; width: 100%; height: 260px; overflow: hidden; }
+  .cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .cover-fade {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 55%, #171717 100%);
+  }
+  .cover-badge {
+    position: absolute; right: 12px; bottom: 12px;
+    background: oklch(0.15 0.01 140 / 0.65);
+    color: #fff;
+    font-size: 11px; font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 999px;
+    display: flex; align-items: center; gap: 4px;
+  }
+
+  .char-body {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 6px 24px 0;
+    gap: 10px;
+  }
+
+  .id-row { display: flex; align-items: center; gap: 8px; }
+  .id-chip {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 11.5px; font-weight: 700; letter-spacing: 0.03em;
+    padding: 4px 10px;
+    background: #262626;
+    color: oklch(0.82 0.01 140);
+    border-radius: 999px;
+  }
+  .name { font-family: 'Song Myung', serif; font-size: 30px; color: oklch(0.97 0.005 100); }
+  .title { font-family: 'Noto Sans KR', sans-serif; font-weight: 600; font-size: 14.5px; color: oklch(0.78 0.01 140); text-align: center; }
+  .desc {
+    font-family: 'Gowun Batang', serif; font-size: 13.5px; line-height: 1.75;
+    color: oklch(0.75 0.01 140); text-align: center; max-width: 320px;
+  }
+  .tag-row { display: flex; flex-wrap: wrap; gap: 8px; width: 100%; padding: 2px 2px 4px; }
+  .tag {
+    flex-shrink: 0;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 12px; font-weight: 700;
+    color: oklch(0.8 0.01 140);
+    padding: 6px 12px;
+    background: #232323;
+    border: 1px solid oklch(1 0 0 / 0.08);
+    border-radius: 999px;
+  }
+  .tag.lime { background: #DCFF52; color: #171717; border-color: #DCFF52; }
+
+  .divider { width: 100%; max-width: 320px; height: 1px; background: oklch(1 0 0 / 0.08); margin: 4px 0; }
+
+  .section-title {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    color: oklch(0.88 0.005 100);
+    text-align: center;
+  }
+
+  /* ---- Traits ---- */
+  .traits-block { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .traits {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 16px;
+    border: 1px solid oklch(1 0 0 / 0.08);
+    background: #1E1E1E;
+    border-radius: 12px;
+  }
+  .trait-item { display: flex; flex-direction: column; gap: 5px; }
+  .trait-item + .trait-item { padding-top: 14px; border-top: 1px solid oklch(1 0 0 / 0.06); }
+  .trait-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 12px; font-weight: 800;
+    color: oklch(0.94 0.005 100);
+  }
+  .trait-label::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #DCFF52; }
+  .trait-text {
+    font-family: 'Gowun Batang', serif;
+    font-size: 13px; line-height: 1.7;
+    color: oklch(0.72 0.01 140);
+  }
+
+  /* ---- Prediction ---- */
+  .prediction-block { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 30px; margin-bottom: 30px; }
+  .prediction {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 16px;
+    border: 1px solid #DCFF52;
+    background: oklch(0.9 0.18 122 / 0.1);
+    border-radius: 12px;
+    width: 100%;
+  }
+  .prediction-icon { flex-shrink: 0; color: #DCFF52; }
+  .prediction-text { font-family: 'Noto Sans KR', sans-serif; font-size: 13px; color: oklch(0.88 0.005 100); }
+  .prediction-text b { color: #DCFF52; font-weight: 800; }
+
+  /* ---- Relationship map ---- */
+  .map-section { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .map-canvas {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid oklch(1 0 0 / 0.08);
+    background: #1E1E1E;
+    border-radius: 12px;
+  }
+  .map-name { font-family: 'Noto Sans KR', sans-serif; font-weight: 700; fill: oklch(0.92 0.005 100); }
+  .map-type-bg { fill: #2A2A2A; }
+  .map-type-text { font-family: 'Noto Sans KR', sans-serif; font-weight: 700; fill: #DCFF52; }
+  .map-more { font-family: 'Noto Sans KR', sans-serif; font-size: 12px; font-weight: 700; color: oklch(0.72 0.01 140); }
+
+  /* ---- Friend rank list ---- */
+  .rank-block { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 30px; }
+  .rank-list { width: 100%; display: flex; flex-direction: column; gap: 8px; }
+  .rank-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px;
+    background: #1E1E1E;
+    border: 1px solid oklch(1 0 0 / 0.08);
+    border-radius: 12px;
+  }
+  .rank-num {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 800; font-size: 13px;
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: #DCFF52; color: #171717;
+    flex-shrink: 0;
+  }
+  .rank-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 1px solid oklch(1 0 0 / 0.1); }
+  .rank-name { flex-grow: 1; font-family: 'Noto Sans KR', sans-serif; font-weight: 700; font-size: 13.5px; color: oklch(0.94 0.005 100); }
+  .rank-type {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 11px; font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #262626;
+    color: oklch(0.8 0.01 140);
+    flex-shrink: 0;
+  }
+
+  /* ---- Type guide accordion ---- */
+  .type-guide { width: 100%; }
+  button.type-header {
+    appearance: none; -webkit-appearance: none;
+    width: 100%; background: none; border: none; margin: 0; padding: 4px 0;
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer;
+  }
+  .type-header-label { font-family: 'Noto Sans KR', sans-serif; font-weight: 700; font-size: 13px; color: oklch(0.92 0.005 100); }
+  .type-chevron { flex-shrink: 0; color: oklch(0.55 0.005 100); transition: transform 0.15s ease; }
+  .type-chevron.open { transform: rotate(180deg); color: #DCFF52; }
+  .type-body { padding: 10px 0 2px; display: flex; flex-direction: column; gap: 10px; }
+  .type-entry { font-family: 'Gowun Batang', serif; font-size: 12.5px; line-height: 1.65; color: oklch(0.72 0.01 140); }
+  .type-entry b { color: #DCFF52; font-weight: 700; }
+
+  .actions { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-top: 30px; }
+  .btn {
+    width: 100%; min-height: 50px; border-radius: 999px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    font-family: 'Noto Sans KR', sans-serif; font-weight: 700; font-size: 15px;
+    border: none; cursor: pointer;
+  }
+  .btn-primary { background: #DCFF52; color: #171717; }
+  .btn-secondary { background: #1E1E1E; color: oklch(0.88 0.005 100); border: 1.5px solid oklch(1 0 0 / 0.12); }
+  .btn.disabled-look { opacity: 0.4; pointer-events: none; }
+
+  /* ---- Share sheet ---- */
+  .share-overlay {
+    position: absolute; inset: 0; z-index: 20;
+    background: oklch(0 0 0 / 0.55);
+    display: none; align-items: flex-end; justify-content: center;
+  }
+  .share-overlay.open { display: flex; }
+  .share-sheet {
+    width: 100%; max-width: 430px;
+    background: #1E1E1E;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    padding: 10px 20px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    border: 1px solid oklch(1 0 0 / 0.08);
+    border-bottom: none;
+  }
+  .share-handle { width: 40px; height: 4px; border-radius: 999px; background: oklch(1 0 0 / 0.2); align-self: center; }
+  .share-title { font-family: 'Noto Sans KR', sans-serif; font-size: 14px; font-weight: 700; color: oklch(0.9 0.005 100); text-align: center; }
+  .share-apps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px 8px; }
+  button.share-app {
+    appearance: none; -webkit-appearance: none;
+    background: none; border: none; margin: 0; padding: 0;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    cursor: pointer;
+  }
+  .share-app-icon { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .share-app-label { font-family: 'Noto Sans KR', sans-serif; font-size: 11px; font-weight: 600; color: oklch(0.75 0.01 140); }
+  .share-divider { width: 100%; height: 1px; background: oklch(1 0 0 / 0.08); }
+  .share-copy-row { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: #262626; border-radius: 12px; }
+  .share-copy-icon { flex-shrink: 0; color: oklch(0.65 0.01 140); }
+  .share-copy-url {
+    flex-grow: 1;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 12.5px;
+    color: oklch(0.68 0.01 140);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  button.share-copy-btn {
+    appearance: none; -webkit-appearance: none;
+    flex-shrink: 0;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 12.5px; font-weight: 700;
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: none; cursor: pointer;
+    background: #DCFF52; color: #171717;
+  }
+  button.share-copy-btn.copied { background: #2A2A2A; color: #DCFF52; }
+  button.share-cancel {
+    appearance: none; -webkit-appearance: none;
+    width: 100%; min-height: 48px;
+    border-radius: 999px;
+    background: #262626; color: oklch(0.85 0.01 140);
+    font-family: 'Noto Sans KR', sans-serif; font-size: 14px; font-weight: 700;
+    border: none; cursor: pointer;
+  }
+
+  /* ---- Register view ---- */
+  .god-portrait {
+    width: 106px; height: 106px; border-radius: 50%;
+    border: 1.5px solid #DCFF52;
+    overflow: hidden;
+    box-shadow: 0 0 28px oklch(0.9 0.2 122 / 0.35);
+  }
+  .god-portrait img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .form { width: 100%; display: flex; flex-direction: column; gap: 16px; }
+  .field { display: flex; flex-direction: column; gap: 8px; }
+  .field-label { font-family: 'Noto Sans KR', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.02em; color: oklch(0.78 0.01 140); }
+  .field-row { display: flex; gap: 8px; }
+  .field-label-row { display: flex; align-items: center; justify-content: space-between; }
+  .input {
+    flex: 1; min-height: 50px;
+    background: #1E1E1E;
+    border: 1.5px solid oklch(1 0 0 / 0.14);
+    border-radius: 10px; color: oklch(0.92 0.005 100);
+    font-family: 'Noto Sans KR', sans-serif; font-size: 14px;
+    padding: 0 14px; display: flex; align-items: center;
+  }
+  .input.placeholder { color: oklch(0.58 0.005 100); }
+  .input.disabled { opacity: 0.45; }
+  select.input {
+    appearance: none; -webkit-appearance: none; width: 100%; cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23999999' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 12px center; background-size: 14px;
+    padding-right: 32px;
+  }
+  select.input option { background: #1E1E1E; color: oklch(0.92 0.005 100); }
+
+  button.toggle { appearance: none; -webkit-appearance: none; margin: 0; font: inherit; cursor: pointer; }
+  button.inline-check-btn {
+    appearance: none; -webkit-appearance: none;
+    background: none; border: none; margin: 0; padding: 0;
+    font: inherit; cursor: pointer;
+  }
+  button.consent-all-btn {
+    appearance: none; -webkit-appearance: none;
+    background: none; border: none; margin: 0; padding: 0;
+    font: inherit; color: inherit; width: 100%; text-align: left;
+    cursor: pointer;
+  }
+
+  .inline-check {
+    display: flex; align-items: center; gap: 6px;
+    font-family: 'Noto Sans KR', sans-serif; font-size: 12px; font-weight: 600;
+    color: oklch(0.75 0.01 140);
+  }
+  .checkbox {
+    width: 18px; height: 18px; border-radius: 5px;
+    border: 1.5px solid oklch(0.5 0.005 100);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .checkbox.checked { background: #DCFF52; border-color: #DCFF52; }
+  .checkbox svg { display: none; }
+  .checkbox.checked svg { display: block; stroke: #171717; }
+
+  .consent {
+    width: 100%; display: flex; flex-direction: column; gap: 12px;
+    padding: 16px; border: 1.5px solid oklch(1 0 0 / 0.1);
+    background: #1E1E1E; border-radius: 12px;
+  }
+  .consent-all {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Noto Sans KR', sans-serif; font-size: 13.5px; font-weight: 700;
+    color: oklch(0.96 0.005 100); padding-bottom: 12px;
+    border-bottom: 1px solid oklch(1 0 0 / 0.08);
+  }
+  .consent-row { display: flex; align-items: center; gap: 10px; }
+  .consent-label { flex-grow: 1; font-family: 'Noto Sans KR', sans-serif; font-size: 12.5px; color: oklch(0.75 0.01 140); }
+  .consent-required { color: oklch(0.68 0.17 30); font-weight: 700; margin-right: 2px; }
+  .consent-link {
+    font-family: 'Noto Sans KR', sans-serif; font-size: 11.5px; font-weight: 600;
+    color: oklch(0.68 0.01 140); text-decoration: underline; flex-shrink: 0;
+  }
+
+  .toggle-group { display: flex; gap: 8px; }
+  .toggle {
+    flex: 1; min-height: 46px; border-radius: 10px;
+    border: 1.5px solid oklch(1 0 0 / 0.14);
+    background: #1E1E1E;
+    color: oklch(0.75 0.01 140);
+    font-family: 'Noto Sans KR', sans-serif; font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .toggle.selected { background: #DCFF52; border-color: #DCFF52; color: #171717; }
+
+  /* ---- Tab bar ---- */
+  .tabbar {
+    position: relative; z-index: 1; flex-shrink: 0;
+    display: flex;
+    border-top: 1px solid oklch(1 0 0 / 0.1);
+    background: #171717;
+    padding: 10px 0 16px;
+  }
+  button.tab {
+    appearance: none; -webkit-appearance: none;
+    background: none; border: none; margin: 0;
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
+    font-family: 'Noto Sans KR', sans-serif; font-size: 11px; font-weight: 700;
+    color: oklch(0.55 0.005 100);
+    cursor: pointer;
+  }
+  button.tab svg { flex-shrink: 0; }
+  button.tab.active { color: #DCFF52; }
+  button.tab.active svg { stroke: #DCFF52; }
+</style>
+</head>
+<body>
+
+<div class="screen">
+
+  <div class="content">
+
+    <div class="view" id="view-register">
+      <div class="view-pad">
+        <div class="eyebrow">절 대 자 의 부 름</div>
+
+        <div class="declare">
+          <div class="declare-lead">그가 묻는다</div>
+          <div class="declare-main" style="font-family:'Song Myung',serif; font-weight:400;">"너는, 언제 이 세상에<br>떨어졌는가?"</div>
+        </div>
+
+        <div class="god-portrait"><img src="img/god.jpg" alt="절대적 존재"></div>
+
+        <div class="form">
+          <div class="field">
+            <div class="field-label">태어난 날</div>
+            <div class="field-row">
+              <div class="input placeholder">연도</div>
+              <div class="input placeholder">월</div>
+              <div class="input placeholder">일</div>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label-row">
+              <div class="field-label">태어난 시간</div>
+              <button type="button" class="inline-check-btn inline-check" id="btn-time-toggle">
+                <div class="checkbox checked" id="checkbox-time">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>
+                </div>
+                시간 모름
+              </button>
+            </div>
+            <div class="field-row" id="row-time-unknown">
+              <div class="input placeholder disabled">모름</div>
+              <div class="input placeholder disabled">모름</div>
+            </div>
+            <div class="field-row" id="row-time-known" style="display:none;">
+              <select class="input" id="select-hour"></select>
+              <select class="input" id="select-minute"></select>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">성별</div>
+            <div class="toggle-group">
+              <button type="button" class="toggle selected" id="btn-gender-female">여성</button>
+              <button type="button" class="toggle" id="btn-gender-male">남성</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="consent">
+          <button type="button" class="consent-all-btn consent-all" id="btn-consent-all">
+            <div class="checkbox" id="checkbox-all">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>
+            </div>
+            전체 동의합니다
+          </button>
+
+          <button type="button" class="consent-all-btn consent-row" id="btn-consent-info">
+            <div class="checkbox" id="checkbox-info">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>
+            </div>
+            <div class="consent-label"><span class="consent-required">필수</span>입력한 정보를 캐릭터 생성에 이용하는 것에 동의합니다</div>
+          </button>
+
+          <button type="button" class="consent-all-btn consent-row" id="btn-consent-privacy">
+            <div class="checkbox" id="checkbox-privacy">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>
+            </div>
+            <div class="consent-label"><span class="consent-required">필수</span>개인정보 처리방침에 동의합니다</div>
+            <div class="consent-link">보기</div>
+          </button>
+
+          <button type="button" class="consent-all-btn consent-row" id="btn-consent-terms">
+            <div class="checkbox" id="checkbox-terms">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>
+            </div>
+            <div class="consent-label"><span class="consent-required">필수</span>이용약관에 동의합니다</div>
+            <div class="consent-link">보기</div>
+          </button>
+
+          <button type="button" class="consent-all-btn consent-row" id="btn-consent-age">
+            <div class="checkbox" id="checkbox-age">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>
+            </div>
+            <div class="consent-label"><span class="consent-required">필수</span>만 14세 이상입니다</div>
+          </button>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn btn-primary disabled-look" id="btn-submit">운명을 확인한다</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="view" id="view-result" style="display:none;">
+
+      <div class="cover">
+        <img src="img/risiel.jpg" alt="리시엘">
+        <div class="cover-fade"></div>
+        <div class="cover-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+          1.2만
+        </div>
+      </div>
+
+      <div class="char-body">
+        <div class="eyebrow">너 는 지 금</div>
+        <div class="declare-main" style="text-align:center;">『푸른 숲의 계승자』에 <mark>빙의</mark>했다</div>
+
+        <div class="id-row">
+          <span class="id-chip">갑진 · 甲辰</span>
+          <span class="id-chip">목(木)</span>
+        </div>
+
+        <div class="name">리시엘</div>
+        <div class="title">푸르른 숲이 울창한 엘프</div>
+
+        <p class="desc">천년 묵은 숲의 수호자, 리시엘. 인간의 발길이 닿지 않는 곳에서 나고 자라, 숲의 언어로 노래하는 법을 배웠다. 겉으론 차분하지만 한번 마음먹은 일은 끝까지 지켜낸다.</p>
+
+        <div class="tag-row">
+          <span class="tag lime">#갑목甲木</span>
+          <span class="tag">#리더기질</span>
+          <span class="tag">#로맨스판타지</span>
+          <span class="tag">#엘프</span>
+          <span class="tag">#숲의수호자</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="traits-block">
+          <div class="section-title">사 주 특 성</div>
+          <div class="traits">
+            <div class="trait-item">
+              <div class="trait-label">핵심 성격</div>
+              <div class="trait-text">곧고 강직하며 자존심이 강해, 한번 정한 방향은 끝까지 밀고 나간다.<br>무리의 중심에 서길 좋아하고, 명예와 원칙을 중요하게 여긴다.</div>
+            </div>
+            <div class="trait-item">
+              <div class="trait-label">장점</div>
+              <div class="trait-text">정직하고 책임감이 강해 사람들이 믿고 의지한다.<br>새로운 일을 개척하는 힘이 뛰어나고, 불의를 보면 나서서 돕는다.</div>
+            </div>
+            <div class="trait-item">
+              <div class="trait-label">단점 · 주의점</div>
+              <div class="trait-text">고집과 자존심 때문에 융통성이 부족할 때가 있다.<br>곧은 성격이라 쉽게 부러지고, 스트레스를 속으로 쌓아둔다.</div>
+            </div>
+            <div class="trait-item">
+              <div class="trait-label">연애 · 관계 성향</div>
+              <div class="trait-text">의존적인 관계보다 대등한 관계를 선호하고, 리드하려는 기질이 있다.<br>겉으론 강해 보여도 속정이 깊고, 한번 마음을 주면 오래간다.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="prediction-block">
+          <div class="section-title">절 대 적 존 재 의 예 언</div>
+          <div class="prediction">
+            <svg class="prediction-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+            <div class="prediction-text">앞으로 <b>3개월</b>, 당신은 몹시 바쁘다.</div>
+          </div>
+        </div>
+
+        <div class="map-section">
+          <div class="section-title">친 구 관 계 도</div>
+          <div class="map-canvas">
+            <svg viewBox="0 0 320 215" width="100%" style="display:block; height:auto;">
+              <defs>
+                <radialGradient id="mapGlow" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="oklch(0.9 0.15 122 / 0.4)"/>
+                  <stop offset="100%" stop-color="transparent"/>
+                </radialGradient>
+                <clipPath id="clipMe"><circle cx="160" cy="95" r="26"/></clipPath>
+                <clipPath id="clipSeoyeon"><circle cx="228" cy="42" r="19"/></clipPath>
+                <clipPath id="clipHajun"><circle cx="252" cy="142" r="17"/></clipPath>
+                <clipPath id="clipJiwoo"><circle cx="54" cy="158" r="15"/></clipPath>
+              </defs>
+
+              <circle cx="160" cy="95" r="105" fill="url(#mapGlow)"/>
+
+              <line x1="160" y1="95" x2="228" y2="42" stroke="oklch(0.75 0.18 122)" stroke-width="2.5"/>
+              <line x1="160" y1="95" x2="252" y2="142" stroke="oklch(0.75 0.18 122 / 0.55)" stroke-width="2"/>
+              <line x1="160" y1="95" x2="54" y2="158" stroke="oklch(0.6 0.02 140 / 0.4)" stroke-width="1.5" stroke-dasharray="4 4"/>
+
+              <image href="img/risiel.jpg" x="134" y="69" width="52" height="52" clip-path="url(#clipMe)" preserveAspectRatio="xMidYMid slice"/>
+              <circle cx="160" cy="95" r="26" fill="none" stroke="#DCFF52" stroke-width="2.5"/>
+              <text x="160" y="132" text-anchor="middle" font-family="'Noto Sans KR',sans-serif" font-weight="700" font-size="9" fill="oklch(0.75 0.01 140)">나 · 리시엘</text>
+
+              <image href="img/seoyeon.jpg" x="209" y="23" width="38" height="38" clip-path="url(#clipSeoyeon)" preserveAspectRatio="xMidYMid slice"/>
+              <circle cx="228" cy="42" r="19" fill="none" stroke="#DCFF52" stroke-width="2.5"/>
+              <circle cx="243" cy="28" r="7.5" fill="#DCFF52"/>
+              <text x="243" y="31" text-anchor="middle" font-size="9" font-weight="800" fill="oklch(0.2 0.01 140)">1</text>
+              <text x="228" y="73" text-anchor="middle" font-size="11" class="map-name">서연</text>
+              <rect x="196" y="79" width="64" height="16" rx="8" class="map-type-bg"/>
+              <text x="228" y="90" text-anchor="middle" font-size="9.5" class="map-type-text">들불</text>
+
+              <image href="img/hajun.jpg" x="235" y="125" width="34" height="34" clip-path="url(#clipHajun)" preserveAspectRatio="xMidYMid slice"/>
+              <circle cx="252" cy="142" r="17" fill="none" stroke="oklch(0.75 0.16 122 / 0.7)" stroke-width="2"/>
+              <circle cx="267" cy="128" r="7.5" fill="oklch(0.85 0.18 122 / 0.85)"/>
+              <text x="267" y="131" text-anchor="middle" font-size="9" font-weight="800" fill="oklch(0.2 0.01 140)">2</text>
+              <text x="252" y="171" text-anchor="middle" font-size="11" class="map-name">하준</text>
+              <rect x="207" y="177" width="90" height="16" rx="8" class="map-type-bg"/>
+              <text x="252" y="188" text-anchor="middle" font-size="9.5" class="map-type-text">잔잔한 호수</text>
+
+              <image href="img/jiwoo.jpg" x="39" y="143" width="30" height="30" clip-path="url(#clipJiwoo)" preserveAspectRatio="xMidYMid slice"/>
+              <circle cx="54" cy="158" r="15" fill="none" stroke="oklch(0.7 0.01 140)" stroke-width="2"/>
+              <circle cx="68" cy="145" r="7.5" fill="oklch(0.9 0.005 100)"/>
+              <text x="68" y="148" text-anchor="middle" font-size="9" font-weight="800" fill="oklch(0.2 0.01 140)">3</text>
+              <text x="54" y="185" text-anchor="middle" font-size="11" class="map-name">지우</text>
+              <rect x="6" y="191" width="96" height="16" rx="8" class="map-type-bg"/>
+              <text x="54" y="202" text-anchor="middle" font-size="9.5" class="map-type-text">엇갈린 별자리</text>
+            </svg>
+          </div>
+        </div>
+
+        <div class="rank-block">
+          <div class="section-title">친 구 순 위</div>
+          <div class="rank-list">
+            <div class="rank-row">
+              <div class="rank-num">1</div>
+              <img class="rank-avatar" src="img/seoyeon.jpg" alt="서연">
+              <div class="rank-name">서연</div>
+              <div class="rank-type">들불</div>
+            </div>
+            <div class="rank-row">
+              <div class="rank-num">2</div>
+              <img class="rank-avatar" src="img/hajun.jpg" alt="하준">
+              <div class="rank-name">하준</div>
+              <div class="rank-type">잔잔한 호수</div>
+            </div>
+            <div class="rank-row">
+              <div class="rank-num">3</div>
+              <img class="rank-avatar" src="img/jiwoo.jpg" alt="지우">
+              <div class="rank-name">지우</div>
+              <div class="rank-type">엇갈린 별자리</div>
+            </div>
+          </div>
+
+          <div class="type-guide">
+            <button type="button" class="type-header" id="btn-guide-toggle">
+              <div class="type-header-label">궁합 유형 안내</div>
+              <svg class="type-chevron" id="guide-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="type-body" id="guide-body" style="display:none;">
+              <div class="type-entry"><b>들불</b> — 활활 타오르는 열정의 사이. 서로에게 불꽃처럼 강렬한 영향을 주고받아요.</div>
+              <div class="type-entry"><b>잔잔한 호수</b> — 잔잔하고 편안한 사이. 함께 있으면 마음이 놓이고, 오래도록 편안하게 이어져요.</div>
+              <div class="type-entry"><b>엇갈린 별자리</b> — 타이밍이 자주 어긋나는 사이. 서로 다르게 움직이지만, 가끔 예상 못한 순간에 마주쳐요.</div>
+            </div>
+          </div>
+
+          <div class="map-more">+ 친구 초대해서 순위 더 보기</div>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn btn-primary" id="btn-open-share">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
+            친구에게 결과 공유
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="share-overlay" id="share-overlay">
+    <div class="share-sheet" id="share-sheet">
+      <div class="share-handle"></div>
+      <div class="share-title">공유하기</div>
+
+      <div class="share-apps">
+        <button type="button" class="share-app">
+          <div class="share-app-icon" style="background:#FEE500;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="#391B1B"><path d="M12 3C6.5 3 2 6.4 2 10.6c0 2.7 1.8 5 4.6 6.4-.2.7-.7 2.6-.8 3-.1.5.2.5.4.3.2-.1 2.6-1.8 3.6-2.5.7.1 1.4.1 2.1.1 5.5 0 10-3.4 10-7.6C22 6.4 17.5 3 12 3Z"/></svg>
+          </div>
+          <div class="share-app-label">카카오톡</div>
+        </button>
+        <button type="button" class="share-app">
+          <div class="share-app-icon" style="background:linear-gradient(135deg,#f58529,#dd2a7b,#8134af,#515bd4);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+          </div>
+          <div class="share-app-label">인스타그램</div>
+        </button>
+        <button type="button" class="share-app">
+          <div class="share-app-icon" style="background:#171717; border:1px solid oklch(1 0 0 / 0.15);">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="#fff"><path d="M18.9 2H22l-7.6 8.7L23.3 22H16.9l-5-6.5-5.7 6.5H2.9l8.1-9.3L2 2h6.6l4.5 6ZM17.7 20h1.7L7.4 3.9H5.6Z"/></svg>
+          </div>
+          <div class="share-app-label">X</div>
+        </button>
+        <button type="button" class="share-app">
+          <div class="share-app-icon" style="background:#39D97F;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0B3B22" stroke-width="1.8"><path d="M21 11.5a8.5 8.5 0 0 1-12.1 7.7L4 20l1-4.6A8.5 8.5 0 1 1 21 11.5Z"/></svg>
+          </div>
+          <div class="share-app-label">문자메시지</div>
+        </button>
+        <button type="button" class="share-app">
+          <div class="share-app-icon" style="background:#1877F2;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M13.5 21v-7.5H16l.5-3.2h-3V8.2c0-.9.3-1.6 1.7-1.6H16.6V3.8C16.2 3.7 15 3.6 13.7 3.6c-2.7 0-4.5 1.6-4.5 4.6v2.7H6.5v3.2h2.7V21h4.3Z"/></svg>
+          </div>
+          <div class="share-app-label">페이스북</div>
+        </button>
+        <button type="button" class="share-app">
+          <div class="share-app-icon" style="background:#3DDC97;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0B3B22" stroke-width="1.8"><path d="M21 11.5a8.5 8.5 0 0 1-12.1 7.7L4 20l1-4.6A8.5 8.5 0 1 1 21 11.5Z"/><circle cx="9" cy="11.5" r="1" fill="#0B3B22" stroke="none"/><circle cx="12" cy="11.5" r="1" fill="#0B3B22" stroke="none"/><circle cx="15" cy="11.5" r="1" fill="#0B3B22" stroke="none"/></svg>
+          </div>
+          <div class="share-app-label">밴드</div>
+        </button>
+        <button type="button" class="share-app">
+          <div class="share-app-icon" style="background:#2A2A2A;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#DCFF52" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          </div>
+          <div class="share-app-label">더보기</div>
+        </button>
+      </div>
+
+      <div class="share-divider"></div>
+
+      <div class="share-copy-row">
+        <svg class="share-copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 13a5 5 0 0 0 7.5.5l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7.5-.5l-2 2a5 5 0 0 0 7 7l1-1"/></svg>
+        <div class="share-copy-url">saju.app/n/risiel-63kcs</div>
+        <button type="button" class="share-copy-btn" id="btn-copy-url">복사</button>
+      </div>
+
+      <button type="button" class="share-cancel" id="btn-close-share">닫기</button>
+    </div>
+  </div>
+
+  <div class="tabbar">
+    <button type="button" class="tab active" id="tab-register">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20 L15 9 a2.5 2.5 0 0 0-3.5-3.5 L2 16 v4 h4Z"/><path d="M13 6.5 L17.5 11"/></svg>
+      사주 등록
+    </button>
+    <button type="button" class="tab" id="tab-result">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3c-4 3-4 15 0 18M12 3c4 3 4 15 0 18M3 12h18"/><circle cx="12" cy="12" r="9"/></svg>
+      사주 결과
+    </button>
+  </div>
+</div>
+
+<script>
+  const state = {
+    screen: 'register',
+    timeUnknown: true,
+    gender: 'female',
+    consentInfo: false,
+    consentPrivacy: false,
+    consentTerms: false,
+    consentAge: false,
+  };
+
+  const $ = (id) => document.getElementById(id);
+
+  function populateSelect(el, max) {
+    const blank = document.createElement('option');
+    blank.value = '';
+    blank.textContent = el === $('select-hour') ? '시' : '분';
+    el.appendChild(blank);
+    for (let i = 0; i <= max; i++) {
+      const opt = document.createElement('option');
+      opt.value = String(i);
+      opt.textContent = String(i).padStart(2, '0') + (el === $('select-hour') ? '시' : '분');
+      el.appendChild(opt);
+    }
+  }
+  populateSelect($('select-hour'), 24);
+  populateSelect($('select-minute'), 59);
+
+  function allConsented() {
+    return state.consentInfo && state.consentPrivacy && state.consentTerms && state.consentAge;
+  }
+
+  function setChecked(id, checked) {
+    $(id).classList.toggle('checked', checked);
+  }
+
+  function render() {
+    $('view-register').style.display = state.screen === 'register' ? 'flex' : 'none';
+    $('view-result').style.display = state.screen === 'result' ? 'flex' : 'none';
+    $('tab-register').classList.toggle('active', state.screen === 'register');
+    $('tab-result').classList.toggle('active', state.screen === 'result');
+
+    setChecked('checkbox-time', state.timeUnknown);
+    $('row-time-unknown').style.display = state.timeUnknown ? 'flex' : 'none';
+    $('row-time-known').style.display = state.timeUnknown ? 'none' : 'flex';
+
+    $('btn-gender-female').classList.toggle('selected', state.gender === 'female');
+    $('btn-gender-male').classList.toggle('selected', state.gender === 'male');
+
+    setChecked('checkbox-info', state.consentInfo);
+    setChecked('checkbox-privacy', state.consentPrivacy);
+    setChecked('checkbox-terms', state.consentTerms);
+    setChecked('checkbox-age', state.consentAge);
+    setChecked('checkbox-all', allConsented());
+
+    $('btn-submit').classList.toggle('disabled-look', !allConsented());
+  }
+
+  $('tab-register').addEventListener('click', () => { state.screen = 'register'; render(); });
+  $('tab-result').addEventListener('click', () => { state.screen = 'result'; render(); });
+
+  $('btn-time-toggle').addEventListener('click', () => {
+    state.timeUnknown = !state.timeUnknown;
+    if (state.timeUnknown) { $('select-hour').value = ''; $('select-minute').value = ''; }
+    render();
+  });
+
+  $('btn-gender-female').addEventListener('click', () => { state.gender = 'female'; render(); });
+  $('btn-gender-male').addEventListener('click', () => { state.gender = 'male'; render(); });
+
+  $('btn-consent-info').addEventListener('click', () => { state.consentInfo = !state.consentInfo; render(); });
+  $('btn-consent-privacy').addEventListener('click', () => { state.consentPrivacy = !state.consentPrivacy; render(); });
+  $('btn-consent-terms').addEventListener('click', () => { state.consentTerms = !state.consentTerms; render(); });
+  $('btn-consent-age').addEventListener('click', () => { state.consentAge = !state.consentAge; render(); });
+  $('btn-consent-all').addEventListener('click', () => {
+    const next = !allConsented();
+    state.consentInfo = next; state.consentPrivacy = next; state.consentTerms = next; state.consentAge = next;
+    render();
+  });
+
+  $('btn-submit').addEventListener('click', () => {
+    if (allConsented()) { state.screen = 'result'; render(); }
+  });
+
+  $('btn-open-share').addEventListener('click', () => { $('share-overlay').classList.add('open'); });
+  $('btn-close-share').addEventListener('click', () => { $('share-overlay').classList.remove('open'); });
+  $('share-overlay').addEventListener('click', () => { $('share-overlay').classList.remove('open'); });
+  $('share-sheet').addEventListener('click', (e) => { e.stopPropagation(); });
+
+  $('btn-copy-url').addEventListener('click', () => {
+    const btn = $('btn-copy-url');
+    btn.textContent = '복사됨';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '복사'; btn.classList.remove('copied'); }, 1500);
+  });
+
+  $('btn-guide-toggle').addEventListener('click', () => {
+    const open = $('guide-body').style.display !== 'none';
+    $('guide-body').style.display = open ? 'none' : 'flex';
+    $('guide-chevron').classList.toggle('open', !open);
+  });
+
+  render();
+</script>
+</body>
+</html>
